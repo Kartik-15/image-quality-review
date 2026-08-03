@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Upload, Download, ImageOff } from 'lucide-react'
+import { Upload, Download, ImageOff, Sun, Moon } from 'lucide-react'
 import { parseCsvFile, exportCsv } from './lib/csv'
 import { useFeedbackStore } from './lib/useFeedbackStore'
+import { useTheme } from './lib/useTheme'
 import { groupVisits, computeKpis, parseAuditDate } from './lib/aggregate'
 import { DEFAULT_DATASET_URL, DEFAULT_DATASET_NAME } from './lib/constants'
 import { KpiHeader } from './components/KpiHeader'
 import { FiltersBar } from './components/FiltersBar'
 import { VisitsTable } from './components/VisitsTable'
 import { ReviewModal } from './components/ReviewModal'
+import logo from './assets/paralleldots-logo.png'
 
 const EMPTY_FILTERS = {
   search: '',
@@ -30,6 +32,7 @@ export default function App() {
   const [activeGroup, setActiveGroup] = useState(null)
 
   const { feedback, setImageFeedback } = useFeedbackStore(datasetName)
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     loadDataset(DEFAULT_DATASET_URL)
@@ -115,13 +118,26 @@ export default function App() {
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950">
       <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div>
-            <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Image Quality Review Portal</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {datasetName} · {rows.length} images
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 shrink-0 items-center rounded-md bg-white px-1.5 shadow-sm ring-1 ring-slate-200">
+              <img src={logo} alt="ParallelDots" className="h-6 w-auto" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Image Quality Review Portal</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {datasetName} · {rows.length} images
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <label className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800">
               <Upload className="h-4 w-4" />
               Load CSV
